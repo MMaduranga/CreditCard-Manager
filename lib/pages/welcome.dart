@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:creditcard_manager/pages/detail.dart';
 import 'package:flutter/material.dart';
 
 class Welcome extends StatefulWidget {
@@ -31,14 +32,15 @@ class _WelcomeState extends State<Welcome> {
               ],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(16.0),
+              borderRadius: BorderRadius.circular(20.0),
               child: BackdropFilter(
                 filter: ImageFilter.blur(
                   sigmaX: 2.0,
                   sigmaY: 2.0,
                 ),
                 child: Container(
-                  margin: const EdgeInsets.only(top: 55.0,bottom: 20.0,left: 20.0,right: 20.0),
+                  margin: const EdgeInsets.only(
+                      top: 60.0, bottom: 20.0, left: 20.0, right: 20.0),
                   width: double.infinity,
                   height: double.infinity,
                   decoration: BoxDecoration(
@@ -99,7 +101,7 @@ class _WelcomeState extends State<Welcome> {
           flex: 1,
           child: TextButton(
             onPressed: () {
-              setState(() {});
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>const AddCard()));
             },
             style: ButtonStyle(
                 padding: MaterialStateProperty.all<EdgeInsets>(
