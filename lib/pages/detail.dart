@@ -1,6 +1,10 @@
+import 'dart:math';
+
 import 'package:creditcard_manager/db/database.dart';
+import 'package:creditcard_manager/pages/home.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
+import 'package:creditcard_manager/db/card.dart';
 
 class AddCard extends StatefulWidget {
   const AddCard({Key? key}) : super(key: key);
@@ -10,10 +14,10 @@ class AddCard extends StatefulWidget {
 }
 
 class _AddCardState extends State<AddCard> {
-  TextEditingController nickName =  TextEditingController();
-  TextEditingController billingDate =  TextEditingController();
+  TextEditingController nickName = TextEditingController();
+  TextEditingController billingDate = TextEditingController();
   TextEditingController currentAmount = TextEditingController();
-  TextEditingController  cashLimit= TextEditingController();
+  TextEditingController cashLimit = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -63,9 +67,21 @@ class _AddCardState extends State<AddCard> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 30.0, right: 150.0),
         child: FloatingActionButton.extended(
-          onPressed: () async{
-NotesDatabase().insertDb(idNum, (int)this.nickName., billingDate, currentAmount, cashLimit);
+          onPressed: () async {
+            await DatabaseHandler()
+                .insertCard(CardDetail(
+                    nickName: nickName.text,
+                    billingDate: int.parse(billingDate.text),
+                    currentAmount: double.parse(currentAmount.text),
+                    cashLimit: double.parse(cashLimit.text)))
+                .whenComplete(() => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Home()),
+                    ));
 
+            // await DatabaseHandler().deleteCard("5eunu");
+            //  a=await DatabaseHandler().searchCard();
+            // print(a);
           },
           label: const Text("Add"),
           icon: const Icon(Icons.thumb_up),
@@ -104,26 +120,30 @@ NotesDatabase().insertDb(idNum, (int)this.nickName., billingDate, currentAmount,
                       Icons.account_circle_outlined,
                       color: Colors.pinkAccent,
                     ),
-                    "nick name",nickName,
+                    "nick name",
+                    nickName,
                     keyboardType: TextInputType.text),
                 textField(
                     const Icon(
                       Icons.date_range,
                       color: Colors.pinkAccent,
                     ),
-                    "Billing Date",billingDate),
+                    "Billing Date",
+                    billingDate),
                 textField(
                     const Icon(
                       Icons.monetization_on_outlined,
                       color: Colors.pinkAccent,
                     ),
-                    "purchased amount",currentAmount),
+                    "purchased amount",
+                    currentAmount),
                 textField(
                     const Icon(
                       Icons.account_balance_wallet_outlined,
                       color: Colors.pinkAccent,
                     ),
-                    "cash limit",cashLimit),
+                    "cash limit",
+                    cashLimit),
                 const SizedBox(
                   height: 100.0,
                 ),
@@ -133,7 +153,7 @@ NotesDatabase().insertDb(idNum, (int)this.nickName., billingDate, currentAmount,
         ),
       );
 
- Padding textField(Icon icon, String hint,TextEditingController control,
+  Padding textField(Icon icon, String hint, TextEditingController control,
           {TextInputType keyboardType = TextInputType.number}) =>
       Padding(
         padding: const EdgeInsets.all(10.0),
