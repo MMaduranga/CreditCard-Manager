@@ -45,6 +45,5 @@ CREATE TABLE (
       where: 'nickName = ?',
       whereArgs: [nickName],
     );
-    print(i);
   }
 }
