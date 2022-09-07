@@ -9,7 +9,7 @@ class DatabaseHandler {
       join(path, 'CardDB.db'),
       onCreate: (database, version) async {
         await database.execute('''
-CREATE TABLE ( 
+CREATE TABLE card( 
   id INTEGER PRIMARY KEY, 
   nickName TEXT NOT NULL,
   billingDate INTEGER NOT NULL,
@@ -46,4 +46,10 @@ CREATE TABLE (
       whereArgs: [nickName],
     );
   }
+  Future<int> updateAmount(CardDetail card) async {
+    final db = await initializeDB();
+    return await db.update('card', card.toMap(),
+        where: 'nickName = ?', whereArgs: [card.nickName]);
+  }
+
 }

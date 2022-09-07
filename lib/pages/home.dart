@@ -1,4 +1,4 @@
-//import 'package:flutter/gestures.dart';
+
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:percent_indicator/percent_indicator.dart';
@@ -6,7 +6,6 @@ import 'package:scroll_snap_list/scroll_snap_list.dart';
 import '../db/card.dart';
 import '../db/database.dart';
 import 'detail.dart';
-
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -20,7 +19,7 @@ class _HomeState extends State<Home> {
   final finalDate = DateTime.now().add(const Duration(days: 21));
   var billingDate = DateTime.now();
   int itemCount = 1;
-  Color primaryColor = Colors.pinkAccent;
+  Color primaryColor = Colors.lightGreenAccent.shade700;
   List<CardDetail> _listData = [];
   int _focusedIndex = 0;
 
@@ -34,6 +33,9 @@ class _HomeState extends State<Home> {
   getData() async {
     _listData = await DatabaseHandler().searchCard();
     itemCount = _listData.length;
+    if (_listData.isEmpty) {
+      emptyList();
+    }
     _listData = arrangeCards(_listData);
     setState(() {});
   }
@@ -102,6 +104,11 @@ class _HomeState extends State<Home> {
     );
   }
 
+  Future<dynamic> emptyList() {
+    return Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const AddCard()));
+  }
+
   Widget popupContainer(
       double dblHeight, double dblWidth, EdgeInsets edgeInsets, Widget cont,
       {double radius = 30.0}) {
@@ -138,110 +145,123 @@ class _HomeState extends State<Home> {
                 builder: (BuildContext context) => super.widget)));
   }
 
-  Widget content(int index) => SingleChildScrollView(
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                popupContainer(
-                    50.0,
-                    50.0,
-                    const EdgeInsets.only(top: 20.0, right: 20.0),
-                    IconButton(
-                        onPressed: () {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                    title: const Text('Are you sure?'),
-                                    content: const Text('delete this card?'),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.pop(context, 'Cancel'),
-                                        child: const Text('Cancel'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context, 'OK');
-                                          deleteCard(
-                                              index, _listData[index].nickName);
-                                        },
-                                        child: const Text('OK'),
-                                      ),
-                                    ],
-                                  ));
-                        },
-                        icon: const Icon(Icons.delete)))
-              ],
+  void updateAmount(int index, String nickName, double amount) async {}
+
+  Widget content(int index) {
+    CardDetail currentCard = _listData[index];
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              popupContainer(
+                  50.0,
+                  50.0,
+                  const EdgeInsets.only(top: 20.0, right: 20.0),
+                  IconButton(
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                                  title: const Text('Are you sure?'),
+                                  content: const Text('delete this card?'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, 'Cancel'),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context, 'OK');
+                                        deleteCard(index, currentCard.nickName);
+                                      },
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                ));
+                      },
+                      icon:  Icon(Icons.delete,color: primaryColor,)))
+            ],
+          ),
+          Text(
+            currentCard.nickName,
+            style:  TextStyle(
+              color:primaryColor,
+              fontSize: 30.0,
             ),
-            Text(
-              _listData[index].nickName,
-              style: const TextStyle(
-                fontSize: 30.0,
+          ),
+          const SizedBox(
+            height: 30.00,
+          ),
+          timeLine(index),
+          const SizedBox(
+            height: 30.0,
+          ),
+          popupContainer(
+              200,
+              200,
+              const EdgeInsets.only(bottom: 20.0, right: 20.0),
+              CircularPercentIndicator(
+                radius: 80.0,
+                lineWidth: 20.0,
+                percent: (currentCard.currentAmount/currentCard.cashLimit),
+                center: Text("${(currentCard.currentAmount*100/currentCard.cashLimit).toStringAsFixed(3)}%"),
+                progressColor: primaryColor,
+                circularStrokeCap: CircularStrokeCap.round,
+                animation: true,
               ),
-            ),
-            const SizedBox(
-              height: 30.00,
-            ),
-            timeLine(index),
-            const SizedBox(
-              height: 30.0,
-            ),
-            popupContainer(
-                200,
-                200,
-                const EdgeInsets.only(bottom: 20.0, right: 20.0),
-                CircularPercentIndicator(
-                  radius: 80.0,
-                  lineWidth: 20.0,
-                  percent: 0.8,
-                  center: const Text("100%"),
-                  progressColor: primaryColor,
-                  circularStrokeCap: CircularStrokeCap.round,
-                  animation: true,
-                ),
-                radius: 100.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  _listData[index].currentAmount.toString(),
-                  style: const TextStyle(fontSize: 25.0),
-                ),
-                popupContainer(
-                    35,
-                    35,
-                    const EdgeInsets.only(left: 10.0, bottom: 10.0),
-                    Center(
-                        child: IconButton(
-                            onPressed: () async {
-                              final amount = await openDialog();
-                              print(amount);
-                            },
-                            icon: const Icon(
-                              Icons.add,
-                              size: 20.0,
-                            ))),
-                    radius: 5)
-              ],
-            ),
-            Text(
-              _listData[index].cashLimit.toString(),
-              style: const TextStyle(fontSize: 25.0),
-            )
-          ],
-        ),
-      );
+              radius: 100.0),
+          const SizedBox(height: 20.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                currentCard.currentAmount.toString(),
+                style: const TextStyle(fontSize: 25.0),
+              ),
+              popupContainer(
+                  35,
+                  35,
+                  const EdgeInsets.only(left: 10.0, bottom: 10.0),
+                  Center(
+                      child: IconButton(
+                          onPressed: () async {
+                            final amount = await openDialog();
+                            CardDetail cardUpdate = currentCard;
+                            cardUpdate.currentAmount +=
+                                double.parse(amount.toString());
+                            await DatabaseHandler()
+                                .updateAmount(cardUpdate)
+                                .whenComplete(() => {setState(() {})});
+                          },
+                          icon:  Icon(
+                            Icons.add,
+                            size: 20.0,
+                            color: primaryColor,
+                          ))),
+                  radius: 5)
+            ],
+          ),
+          Text(
+            currentCard.cashLimit.toString(),
+            style: const TextStyle(fontSize: 25.0),
+          )
+        ],
+      ),
+    );
+  }
+
   Future<String?> openDialog() => showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-            title: const Text("Enter"),
+            title: const Text("Enter Amount"),
             content: TextField(
               controller: addAmount,
               autofocus: true,
               decoration: const InputDecoration(
-                hintText: "enter value",
+                hintText: "value",
               ),
             ),
             actions: [
@@ -249,7 +269,7 @@ class _HomeState extends State<Home> {
                 onPressed: () {
                   submit();
                 },
-                child: const Text("data"),
+                child: const Text("Done"),
               )
             ],
           ));
@@ -264,10 +284,15 @@ class _HomeState extends State<Home> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         popupContainer(
-            50.0,
-            50.0,
-            const EdgeInsets.only(top: 20.0, right: 20.0),
-            Center(child: Text("n${now.month}/${now.day}"))),
+            60.0,
+            60.0,
+            const EdgeInsets.only(top: 20.0, right: 20.0, left: 20.0),
+            Center(
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [const Text("Today"), Text("${now.month}/${now.day}")],
+            )),
+            radius: 10.0),
         Container(
           margin: const EdgeInsets.only(top: 20.0),
           width: 30.0,
@@ -275,25 +300,49 @@ class _HomeState extends State<Home> {
           color: primaryColor,
         ),
         popupContainer(
-            50.0,
-            50.0,
-            const EdgeInsets.only(top: 20.0, right: 20.0),
-            Center(child: Text("b${billingDate.month}/${billingDate.day}"))),
-        Container(
-          margin: const EdgeInsets.only(top: 20.0),
-          width: 30.0,
-          height: 2.0,
-          color: primaryColor,
-        ),
-        popupContainer(
-            50.0,
-            50.0,
+            60.0,
+            60.0,
             const EdgeInsets.only(top: 20.0, right: 20.0),
             Center(
-                child: Text(
-                    "fi${billingDate.add(const Duration(days: 21)).month}/${billingDate.add(const Duration(days: 21)).day}"))),
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("Billing"),
+                Text(
+                    "${billingMonth(billingDate.day).month}/${(billingDate.day)}")
+              ],
+            )),
+            radius: 10.0),
+        Container(
+          margin: const EdgeInsets.only(top: 20.0),
+          width: 30.0,
+          height: 2.0,
+          color: primaryColor,
+        ),
+        popupContainer(
+            60.0,
+            60.0,
+            const EdgeInsets.only(top: 20.0, right: 20.0),
+            Center(
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("Final"),
+                Text(
+                    "${billingMonth(billingDate.day).add(const Duration(days: 21)).month}/${billingDate.add(const Duration(days: 21)).day}")
+              ],
+            )),
+            radius: 10.0),
       ],
     );
+  }
+
+  DateTime billingMonth(int day) {
+    if (now.day > day) {
+      return now.add(const Duration(days: 30));
+    } else {
+      return billingDate;
+    }
   }
 
   List<CardDetail> arrangeCards(List<CardDetail> arrangedListData) {

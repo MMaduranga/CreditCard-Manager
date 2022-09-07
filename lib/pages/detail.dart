@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:creditcard_manager/db/database.dart';
 import 'package:creditcard_manager/pages/home.dart';
@@ -79,9 +78,9 @@ class _AddCardState extends State<AddCard> {
                       MaterialPageRoute(builder: (context) => const Home()),
                     ));
 
-            await DatabaseHandler().deleteCard("5eunu");
-             a=await DatabaseHandler().searchCard();
-            print(a);
+            // await DatabaseHandler().deleteCard("5eunu");
+            //  a=await DatabaseHandler().searchCard();
+            // print(a);
           },
           label: const Text("Add"),
           icon: const Icon(Icons.thumb_up),
@@ -89,6 +88,7 @@ class _AddCardState extends State<AddCard> {
       ),
     );
   }
+
 
   Center content() => Center(
         child: SingleChildScrollView(

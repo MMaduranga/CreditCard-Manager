@@ -1,13 +1,9 @@
 import 'package:creditcard_manager/pages/home.dart';
-import 'package:creditcard_manager/pages/test.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:overlay_support/overlay_support.dart';
 
-import '../db/card.dart';
-import '../db/database.dart';
 
 class Loading extends StatefulWidget {
   const Loading({Key? key}) : super(key: key);
@@ -31,11 +27,11 @@ class _LoadingState extends State<Loading> {
         internetCheck();
       });
     });
-
   }
+
   void delayLoading() {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => const Home()));
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const Home()));
   }
 
   void internetCheck() async {
@@ -48,6 +44,7 @@ class _LoadingState extends State<Loading> {
       setState(() {});
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,7 +87,7 @@ class _LoadingState extends State<Loading> {
             inset: false,
           ),
         ],
-        color: Colors.pinkAccent,
+        color: Colors.lightGreenAccent.shade700,
         borderRadius: BorderRadius.circular(radius),
       ),
       child: cont,

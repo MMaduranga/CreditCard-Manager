@@ -1,7 +1,7 @@
 class CardDetail {
   final String nickName;
   final int billingDate;
-  final double currentAmount;
+   double currentAmount;
   final double cashLimit;
 
   CardDetail(
